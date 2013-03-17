@@ -15,10 +15,17 @@ public class PerfectFailureDetector implements IFailureDetector {
 		}
 	}
 
+	public PerfectFailureDetector(Process p) {
+		this.process = p;
+		this.timer = new Timer();
+		this.suspects = new LinkedList<Integer>();
+	}
+
+
 	@Override
 	/* Initiates communication tasks, e.g. sending heartbeats periodically */
 	public void begin() {
-		
+
 	}
 
 	/* Handles in-coming (heartbeat) messages */

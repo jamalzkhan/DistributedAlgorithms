@@ -17,7 +17,7 @@ public class Utils {
 	
 	public static final int MSG_QUEUE_SIZE = 100;
 	public static final int DELAY = 100; /* msec; 1sec = 1000msec */
-	public static final boolean GAUSSIAN = false;
+	public static final boolean GAUSSIAN = true;
 	
 	/* For measurement purposes */
 	public static final long STEP = 100;

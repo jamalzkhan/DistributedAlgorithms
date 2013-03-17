@@ -22,8 +22,9 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 			for (int i = 0; i < processLastMessage.length; i++) {
 				long timeDifference = currentTime - processLastMessage[i];
 				if ((processLastMessage[i] != 0) && (timeDifference > (Delta + maximumDelays[i]))){
-					if (!suspects.contains(i))
+					if (!suspects.contains(i)){
 						suspects.add(i);
+					}
 				}
 			}
 
@@ -54,11 +55,13 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 		
 		processLastMessage[sourceProcess] = recieveTime;
 		
-		if (maximumDelays[sourceProcess] < delay)
+		if (maximumDelays[sourceProcess] < delay){
 			maximumDelays[sourceProcess] = delay;
+		}
 		
-		if (suspects.contains(sourceProcess))
+		if (suspects.contains(sourceProcess)){
 			suspects.remove(sourceProcess);
+		}
 		
 		Utils.out(process.pid, m.toString());
 	}

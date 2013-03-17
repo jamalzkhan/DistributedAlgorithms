@@ -5,16 +5,22 @@ import java.util.TimerTask;
 
 public class PerfectFailureDetector implements IFailureDetector {
 
-	Process process;
+	Process p;
 	LinkedList<Integer> suspects;
 	Timer timer;
-
+	int[] processLastMessage;
+	
 	class PeriodicTask extends TimerTask {
 		public void run() {
-			process.broadcast("heartbeat", "null");
+			p.broadcast("heartbeat", "null");
 		}
 	}
 
+	public PerfectFailureDetector(Process p) {
+		this.p = p;
+		processLastMessage = new int[p.n];
+	}
+	
 	@Override
 	/* Initiates communication tasks, e.g. sending heartbeats periodically */
 	public void begin() {

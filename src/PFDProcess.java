@@ -23,7 +23,7 @@ class PFDProcess extends Process {
 		String name = args[0];
 		int id = Integer.parseInt(args[1]);
 		int n = Integer.parseInt(args[2]);
-		P p = new P(name, id, n);
+		PFDProcess p = new PFDProcess(name, id, n);
 		p.registeR();
 		p.begin();
 	}

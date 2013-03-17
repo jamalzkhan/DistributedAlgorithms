@@ -1,4 +1,4 @@
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -6,35 +6,56 @@ import java.util.TimerTask;
 public class PerfectFailureDetector implements IFailureDetector {
 
 	Process process;
-	LinkedList<Integer> suspects;
+	HashSet<Integer> suspects;
 	Timer timer;
-	int[] processLastMessage;
+	long[] processLastMessage;
+	
+	static final int Delta = 1000; /* 1sec */
 	
 	class PeriodicTask extends TimerTask {
 		public void run() {
 			process.broadcast("heartbeat", "null");
+			
+			long currentTime = System.currentTimeMillis();
+			for (int i = 0; i < processLastMessage.length; i++) {
+				long timeDifference = currentTime - processLastMessage[i];
+				if ((processLastMessage[i] != 0) && (timeDifference > (Delta + Utils.DELAY))){
+					if (!suspects.contains(i))
+						suspects.add(i);
+				}
+			}
+			
+			/**
+			 * For debugging purposes
+			 */
+//			for (int p : suspects) {
+//				Utils.out("Process " + (p + 1) + " crashed!");
+//			}
+
 		}
 	}
 
 	public PerfectFailureDetector(Process p) {
-
 		this.process = p;
 		this.timer = new Timer();
-		this.suspects = new LinkedList<Integer>();
-		processLastMessage = new int[p.n];
+		this.suspects = new HashSet<Integer>();
+		processLastMessage = new long[p.n];
 	}
 
 	@Override
 	/* Initiates communication tasks, e.g. sending heartbeats periodically */
 	public void begin() {
-
+		timer.schedule(new PeriodicTask(), 0, Delta);
 	}
 
 	/* Handles in-coming (heartbeat) messages */
 	@Override
 	public void receive(Message m) {
-		// TODO Auto-generated method stub
-
+		long recieveTime = System.currentTimeMillis();
+		processLastMessage[m.getSource() - 1] = recieveTime;
+		
+		//print suspects as well
+		Utils.out(process.pid, m.toString());
 	}
 
 	/* Returns true if ‘process’ is suspected */

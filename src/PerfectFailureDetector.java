@@ -24,13 +24,6 @@ public class PerfectFailureDetector implements IFailureDetector {
 						suspects.add(i);
 				}
 			}
-			
-			/**
-			 * For debugging purposes
-			 */
-//			for (int p : suspects) {
-//				Utils.out("Process " + (p + 1) + " crashed!");
-//			}
 
 		}
 	}

@@ -1,13 +1,22 @@
 class P extends Process {
-	
+
 	private IFailureDetector detector;
+	private String heartBeat = "heartbeat";
 
 	public P(String name, int pid, int n) {
 		super(name, pid, n);
-		detector = new PerfectFailureDetector(this);
+		this.detector = new PerfectFailureDetector(this);
 	}
 
 	public void begin() {
+		this.detector.begin();
+	}
+
+	public synchronized void receive (Message m) {
+		String type = m.getType();
+		if (type.equals(heartBeat)) {
+			detector.receive(m);
+		}
 	}
 
 	public static void main(String[] args) {

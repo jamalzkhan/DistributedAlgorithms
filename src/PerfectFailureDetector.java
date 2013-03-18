@@ -9,6 +9,8 @@ public class PerfectFailureDetector implements IFailureDetector {
 	HashSet<Integer> suspects;
 	Timer timer;
 	long[] processLastMessage;
+	TimerTask periodicTask;
+	protected Message latestMessage;
 	
 	static final int Delta = 1000; /* 1sec */
 	
@@ -20,8 +22,12 @@ public class PerfectFailureDetector implements IFailureDetector {
 			for (int i = 0; i < processLastMessage.length; i++) {
 				long timeDifference = currentTime - processLastMessage[i];
 				if ((processLastMessage[i] != 0) && (timeDifference > (Delta + Utils.DELAY))){
-					if (!suspects.contains(i))
+					if (!suspects.contains(i)){
+						System.out.println("Suspected " + (i+1));
 						suspects.add(i);
+						isSuspected(i);
+					}
+						
 				}
 			}
 
@@ -33,20 +39,22 @@ public class PerfectFailureDetector implements IFailureDetector {
 		this.timer = new Timer();
 		this.suspects = new HashSet<Integer>();
 		processLastMessage = new long[p.n];
+		this.periodicTask = new PeriodicTask();
 	}
 
 	@Override
 	/* Initiates communication tasks, e.g. sending heartbeats periodically */
 	public void begin() {
-		timer.schedule(new PeriodicTask(), 0, Delta);
+		timer.schedule(this.periodicTask, 0, Delta);
 	}
 
 	/* Handles in-coming (heartbeat) messages */
 	@Override
-	public void receive(Message m) {
+	public synchronized void receive(Message m) {
 		long recieveTime = System.currentTimeMillis();
 		processLastMessage[m.getSource() - 1] = recieveTime;
-		
+		latestMessage = m;
+		notifyAll();
 		//print suspects as well
 		Utils.out(process.pid, m.toString());
 	}
@@ -54,23 +62,20 @@ public class PerfectFailureDetector implements IFailureDetector {
 	/* Returns true if ‘process’ is suspected */
 	@Override
 	public boolean isSuspect(Integer process) {
-		// TODO Auto-generated method stub
-		return false;
+		return suspects.contains(process);
 	}
 
 
 	@Override
 	public int getLeader() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	/* Notifies a blocking thread that ‘process’ has been suspected.
 	 * * Used only for tasks in §2.1.3 */
 	@Override
-	public void isSuspected(Integer process) {
-		// TODO Auto-generated method stub
-
+	public synchronized void isSuspected(Integer process) {
+		notifyAll();
 	}
 
 }

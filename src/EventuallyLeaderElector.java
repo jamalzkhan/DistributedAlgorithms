@@ -10,6 +10,7 @@ public class EventuallyLeaderElector implements IFailureDetector {
 	Timer timer;
 	long[] processLastMessage;
 	long[] maximumDelays;
+	TimerTask periodicTask;
 	
 	static final int Delta = 1000; /* 1sec */
 	
@@ -37,12 +38,13 @@ public class EventuallyLeaderElector implements IFailureDetector {
 		this.suspects = new HashSet<Integer>();
 		this.maximumDelays = new long[p.n];
 		processLastMessage = new long[p.n];
+		this.periodicTask =  new PeriodicTask();
 	}
 
 	@Override
 	/* Initiates communication tasks, e.g. sending heartbeats periodically */
 	public void begin() {
-		timer.schedule(new PeriodicTask(), 0, Delta);
+		timer.schedule(periodicTask, 0, Delta);
 		selectLeader();
 	}
 	
@@ -88,16 +90,13 @@ public class EventuallyLeaderElector implements IFailureDetector {
 	
 	@Override
 	public int getLeader() {
-		// TODO Auto-generated method stub
 		return leader;
 	}
 
-	/* Notifies a blocking thread that ‘process’ has been suspected.
-	 * * Used only for tasks in §2.1.3 */
 	@Override
 	public void isSuspected(Integer process) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 }

@@ -1,7 +1,7 @@
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
+
 
 public class EventuallyPerfectFailureDetector implements IFailureDetector {
 
@@ -10,6 +10,7 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 	Timer timer;
 	long[] processLastMessage;
 	long[] maximumDelays;
+	TimerTask periodicTask;
 	
 	static final int Delta = 1000; /* 1sec */
 	
@@ -36,13 +37,14 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 		this.suspects = new HashSet<Integer>();
 		this.maximumDelays = new long[p.n];
 		processLastMessage = new long[p.n];
+		periodicTask = new PeriodicTask();
 	}
 
 	@Override
 	/* Initiates communication tasks, e.g. sending heartbeats periodically */
 	public void begin() {
-		timer.schedule(new PeriodicTask(), 0, Delta);
-
+		timer.schedule(this.periodicTask, 0, Delta);
+		
 	}
 	
 
@@ -69,15 +71,12 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 	/* Returns true if ‘process’ is suspected */
 	@Override
 	public boolean isSuspect(Integer process) {
-		// TODO Auto-generated method stub
 		return false;
 	}
-
 	
 	
 	@Override
 	public int getLeader() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -85,7 +84,6 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 	 * * Used only for tasks in §2.1.3 */
 	@Override
 	public void isSuspected(Integer process) {
-		// TODO Auto-generated method stub
 
 	}
 

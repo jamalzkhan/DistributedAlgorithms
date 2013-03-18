@@ -50,7 +50,7 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 
 	/* Handles in-coming (heartbeat) messages */
 	@Override
-	public void receive(Message m) {
+	public synchronized void receive(Message m) {
 		long recieveTime = System.currentTimeMillis();
 		long delay = (System.currentTimeMillis() - Long.parseLong(m.getPayload()));
 		int sourceProcess = m.getSource() - 1;

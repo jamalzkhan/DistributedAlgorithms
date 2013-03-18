@@ -1,6 +1,4 @@
-import java.util.TimerTask;
 
-import javax.rmi.CORBA.Util;
 
 
 public class StrongFailureDetector extends PerfectFailureDetector {
@@ -11,7 +9,6 @@ public class StrongFailureDetector extends PerfectFailureDetector {
 	private int x = this.process.pid;
 	private int n = this.process.n;
 	private Message messageCollected;
-	
 
 	class ConsensusTask extends PeriodicTask{
 
@@ -29,7 +26,7 @@ public class StrongFailureDetector extends PerfectFailureDetector {
 					int recievedRound = Integer.parseInt(messageContents[1]);
 					if (round == recievedRound)
 						x = value;
-					Utils.out("Collected a new leader " + x);
+					Utils.out("Collected leader " + x);
 				}
 				round++;
 			} else {
@@ -40,7 +37,6 @@ public class StrongFailureDetector extends PerfectFailureDetector {
 	}
 
 
-
 	public StrongFailureDetector(Process p) {
 		super(p);
 		this.periodicTask = new ConsensusTask();
@@ -48,7 +44,7 @@ public class StrongFailureDetector extends PerfectFailureDetector {
 
 	private synchronized boolean collect(String value, int r){
 
-		Utils.out("Reached collect");
+//		Utils.out("Reached collect");
 		while (		!suspects.contains(r) && (
 						latestMessage == null ||
 						latestMessage.getSource() != r ||
@@ -56,7 +52,7 @@ public class StrongFailureDetector extends PerfectFailureDetector {
 					)
 				) {
 			try {
-				Utils.out("I got blocked and " + latestMessage.toString());
+//				Utils.out("I got blocked and whatever");
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -67,7 +63,7 @@ public class StrongFailureDetector extends PerfectFailureDetector {
 			messageCollected = latestMessage;
 		}
 		
-		Utils.out("I got unblocked");
+//		Utils.out("I got unblocked");
 		return !isSuspect(r);
 	}
 

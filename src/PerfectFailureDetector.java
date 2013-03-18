@@ -54,9 +54,10 @@ public class PerfectFailureDetector implements IFailureDetector {
 		long recieveTime = System.currentTimeMillis();
 		processLastMessage[m.getSource() - 1] = recieveTime;
 		latestMessage = m;
-		notifyAll();
 		//print suspects as well
 		Utils.out(process.pid, m.toString());
+		notifyAll();
+
 	}
 
 	/* Returns true if ‘process’ is suspected */

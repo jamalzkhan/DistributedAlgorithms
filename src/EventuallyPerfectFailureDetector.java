@@ -11,6 +11,7 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 	long[] processLastMessage;
 	long[] maximumDelays;
 	TimerTask periodicTask;
+	protected Message latestMessage;
 	
 	static final int Delta = 1000; /* 1sec */
 	
@@ -25,6 +26,7 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 				if ((processLastMessage[i] != 0) && (timeDifference > (Delta + maximumDelays[i]))){
 					if (!suspects.contains(i)){
 						suspects.add(i);
+						isSuspected(i);
 					}
 				}
 			}
@@ -64,14 +66,16 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 		if (suspects.contains(sourceProcess)){
 			suspects.remove(sourceProcess);
 		}
+		latestMessage = m;
 		
 		Utils.out(process.pid, m.toString());
+		isSuspected(m.getSource());
 	}
 
 	/* Returns true if ‘process’ is suspected */
 	@Override
 	public boolean isSuspect(Integer process) {
-		return false;
+		return suspects.contains(process);
 	}
 	
 	
@@ -84,6 +88,7 @@ public class EventuallyPerfectFailureDetector implements IFailureDetector {
 	 * * Used only for tasks in §2.1.3 */
 	@Override
 	public void isSuspected(Integer process) {
+		notifyAll();
 
 	}
 

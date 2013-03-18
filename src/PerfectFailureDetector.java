@@ -56,7 +56,7 @@ public class PerfectFailureDetector implements IFailureDetector {
 		latestMessage = m;
 		//print suspects as well
 		Utils.out(process.pid, m.toString());
-		notifyAll();
+		isSuspected(m.getSource());
 
 	}
 
